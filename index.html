@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playlist Latinoamericana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --magenta:#e6197a;
+    --naranja:#ff7a00;
+    --amarillo:#ffc814;
+    --turquesa:#00b3a6;
+    --verde:#3bb54a;
+    --morado:#7b2cbf;
+    --azul:#1f6feb;
+    --tinta:#2a1233;
+    --papel:#fffaf1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Baloo 2',system-ui,sans-serif;
+    color:var(--tinta);
+    min-height:100vh;
+    background-color:#e6197a;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,200,20,.85) 0 14%, transparent 30%),
+      radial-gradient(circle at 88% 12%, rgba(0,179,166,.85) 0 12%, transparent 32%),
+      radial-gradient(circle at 80% 85%, rgba(123,44,191,.85) 0 14%, transparent 34%),
+      radial-gradient(circle at 15% 90%, rgba(59,181,74,.8) 0 12%, transparent 30%),
+      linear-gradient(135deg,#ff7a00 0%,#e6197a 45%,#7b2cbf 100%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+
+  /* Patrón de textil andino / grecas encima del fondo */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.13;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23fff' stroke-width='3'%3E%3Cpath d='M0 40 L20 20 L40 40 L60 20 L80 40'/%3E%3Cpath d='M0 60 L20 80 L40 60 L60 80 L80 60'/%3E%3Crect x='34' y='4' width='12' height='12' transform='rotate(45 40 10)'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Notas musicales flotando */
+  .notas{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .notas span{
+    position:absolute;bottom:-60px;color:rgba(255,255,255,.35);
+    font-size:2rem;animation:subir linear infinite;
+  }
+  @keyframes subir{
+    0%{transform:translateY(0) rotate(0deg);opacity:0}
+    10%{opacity:1}
+    100%{transform:translateY(-115vh) rotate(25deg);opacity:0}
+  }
+
+  /* Papel picado */
+  .papel-picado{
+    position:relative;z-index:1;display:flex;justify-content:center;
+    gap:6px;padding-top:14px;overflow:hidden;
+  }
+  .papel-picado::before{
+    content:"";position:absolute;top:14px;left:0;right:0;height:3px;background:rgba(42,18,51,.55);
+  }
+  .banderin{
+    flex:0 0 auto;width:56px;height:64px;
+    clip-path:polygon(0 0,100% 0,100% 78%,88% 100%,75% 78%,62% 100%,50% 78%,38% 100%,25% 78%,12% 100%,0 78%);
+    -webkit-mask:radial-gradient(circle at 50% 38%, transparent 7px, #000 8px),
+                 radial-gradient(circle at 25% 60%, transparent 4px, #000 5px);
+    -webkit-mask-composite:source-in;
+            mask:radial-gradient(circle at 50% 38%, transparent 7px, #000 8px) intersect,
+                 radial-gradient(circle at 25% 60%, transparent 4px, #000 5px);
+    transform-origin:top center;animation:mecer 3s ease-in-out infinite;
+    box-shadow:0 4px 0 rgba(0,0,0,.1);
+  }
+  .banderin:nth-child(6n+1){background:var(--amarillo)}
+  .banderin:nth-child(6n+2){background:var(--turquesa);animation-delay:-.5s}
+  .banderin:nth-child(6n+3){background:var(--verde);animation-delay:-1s}
+  .banderin:nth-child(6n+4){background:var(--papel);animation-delay:-1.5s}
+  .banderin:nth-child(6n+5){background:var(--azul);animation-delay:-2s}
+  .banderin:nth-child(6n+6){background:var(--naranja);animation-delay:-2.5s}
+  @keyframes mecer{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  /* Selector de idioma */
+  .idioma{
+    position:fixed;top:16px;right:16px;z-index:10;
+    display:flex;background:rgba(255,250,241,.95);border-radius:999px;padding:4px;
+    box-shadow:0 6px 18px rgba(42,18,51,.3);
+  }
+  .idioma button{
+    font-family:'Bungee',sans-serif;font-size:.9rem;border:0;background:transparent;
+    color:var(--tinta);padding:6px 14px;border-radius:999px;cursor:pointer;transition:.2s;
+  }
+  .idioma button.activo{background:var(--magenta);color:#fff}
+  .idioma button:not(.activo):hover{background:rgba(230,25,122,.12)}
+
+  header{
+    position:relative;z-index:1;text-align:center;padding:28px 16px 10px;color:#fff;
+  }
+  h1{
+    font-family:'Bungee',sans-serif;font-weight:400;
+    font-size:clamp(2rem,6vw,4rem);line-height:1.05;letter-spacing:.5px;
+    text-shadow:4px 4px 0 var(--tinta),-2px -2px 0 var(--amarillo);
+  }
+  .subtitulo{
+    font-size:clamp(1rem,2.4vw,1.3rem);font-weight:600;margin-top:12px;
+    max-width:640px;margin-inline:auto;text-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+
+  main{
+    position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 16px 60px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;align-items:start;
+  }
+
+  /* Cajita de país */
+  .pais{
+    background:var(--papel);border-radius:20px;overflow:hidden;
+    box-shadow:0 10px 0 rgba(42,18,51,.25),0 14px 30px rgba(0,0,0,.25);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .pais:not(.abierto):hover{transform:translateY(-5px) rotate(-.5deg)}
+  .pais.abierto{grid-column:1/-1}
+  .franja{height:14px;display:flex}
+  .franja i{flex:1}
+  .pais-cabecera{
+    width:100%;border:0;background:transparent;cursor:pointer;text-align:left;
+    display:flex;align-items:center;gap:14px;padding:18px 20px;font-family:inherit;color:inherit;
+  }
+  .pais-icono{
+    width:52px;height:52px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+    font-family:'Bungee',sans-serif;font-size:1.05rem;color:#fff;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);
+  }
+  .pais-textos{flex:1;min-width:0;display:flex;flex-direction:column}
+  .pais-nombre{font-family:'Bungee',sans-serif;font-size:1.35rem;line-height:1.1}
+  .pais-resumen{font-size:.92rem;font-weight:600;opacity:.7;display:flex;flex-wrap:wrap;column-gap:8px;margin-top:2px}
+  .pais-resumen span{white-space:nowrap}
+  .pais{scroll-margin-top:70px}
+  .flecha{
+    width:34px;height:34px;border-radius:50%;background:rgba(42,18,51,.08);flex:0 0 auto;
+    display:grid;place-items:center;transition:transform .3s;
+  }
+  .abierto .flecha{transform:rotate(180deg)}
+
+  .pais-contenido{
+    display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease;
+  }
+  .abierto .pais-contenido{grid-template-rows:1fr}
+  .pais-contenido > div{overflow:hidden}
+  .generos{
+    padding:4px 20px 24px;display:grid;gap:18px;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  }
+
+  .genero{
+    background:#fff;border-radius:16px;padding:16px 18px;
+    border-left:8px solid var(--c,var(--magenta));
+    box-shadow:0 3px 10px rgba(42,18,51,.08);
+  }
+  .genero h3{
+    font-family:'Bungee',sans-serif;font-weight:400;font-size:1.02rem;
+    color:var(--c,var(--magenta));margin-bottom:6px;line-height:1.2;
+  }
+  .genero p{font-size:.98rem;line-height:1.45;margin-bottom:12px;font-weight:500}
+  .canciones{list-style:none;display:grid;gap:8px}
+  .canciones a{
+    display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;
+    padding:8px 10px;border-radius:12px;background:rgba(42,18,51,.04);transition:.18s;
+  }
+  .canciones a:hover,.canciones a:focus-visible{background:var(--c,var(--magenta));color:#fff;transform:translateX(4px)}
+  .play{
+    width:34px;height:34px;border-radius:50%;background:#ff0033;flex:0 0 auto;
+    display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.2);
+  }
+  .play svg{width:13px;height:13px;margin-left:2px;fill:#fff}
+  .cancion-info{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+  .cancion-titulo{font-weight:700;font-size:1rem}
+  .cancion-artista{font-size:.88rem;opacity:.75;font-weight:600}
+  .canciones a:hover .cancion-artista{opacity:.9}
+
+  footer{
+    position:relative;z-index:1;text-align:center;color:#fff;font-weight:600;
+    padding:0 16px 30px;text-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+
+  @media (max-width:600px){
+    .banderin{width:40px;height:48px}
+    .idioma{top:10px;right:10px}
+    header{padding-top:40px}
+    .generos{grid-template-columns:1fr;padding:4px 14px 18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .banderin,.notas span{animation:none}
+    .notas{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="notas" aria-hidden="true"></div>
+
+<div class="idioma" role="group" aria-label="Idioma / Langue">
+  <button type="button" data-lang="es" class="activo">ES</button>
+  <button type="button" data-lang="fr">FR</button>
+</div>
+
+<div class="papel-picado" aria-hidden="true"></div>
+
+<header>
+  <h1 id="titulo"></h1>
+  <p class="subtitulo" id="subtitulo"></p>
+</header>
+
+<main id="paises"></main>
+
+<footer id="pie"></footer>
+
+<script>
+/* =====================================================================
+   DATOS DE LA PLAYLIST
+   Para añadir un país nuevo, copia uno de los bloques { ... } y cambia:
+   - nombre: { es, fr }
+   - sigla: 2 letras que salen en el círculo
+   - colores: colores de la bandera (para la franja de arriba)
+   - generos: lista de géneros, cada uno con nombre, descripción y canciones
+   ===================================================================== */
+const PAISES = [
+  {
+    nombre:{es:"Colombia",fr:"Colombie"}, sigla:"CO",
+    colores:["#FCD116","#FCD116","#003893","#CE1126"],
+    generos:[
+      {
+        nombre:{es:"Música urbana / Reguetón",fr:"Musique urbaine / Reggaeton"},
+        desc:{
+          es:"Se desarrolló a partir de la mezcla del reguetón y otros sonidos urbanos caribeños con influencias del hip-hop, dancehall y pop. En Colombia adquirió un estilo propio, especialmente en Medellín, incorporando ritmos bailables y producción electrónica.",
+          fr:"Elle s'est développée à partir du mélange du reggaeton et d'autres sons urbains caribéens, avec des influences du hip-hop, du dancehall et de la pop. En Colombie, elle a acquis un style propre, notamment à Medellín, en intégrant des rythmes dansants et une production électronique."
+        },
+        canciones:[
+          {artista:"Beéle",titulo:"No tiene sentido",url:"https://youtu.be/HL9VoQ-er_U"}
+        ]
+      },
+      {
+        nombre:{es:"Vallenato",fr:"Vallenato"},
+        desc:{
+          es:"Nació en la región del Caribe colombiano a partir de la mezcla de tradiciones indígenas, africanas y europeas. Se caracteriza por el acordeón, la caja y la guacharaca, y sus canciones suelen contar historias de amor, vida cotidiana y personajes de la región.",
+          fr:"Né dans la région caribéenne de Colombie du mélange de traditions indigènes, africaines et européennes. Il se caractérise par l'accordéon, la caja et la guacharaca, et ses chansons racontent souvent des histoires d'amour, de vie quotidienne et de personnages de la région."
+        },
+        canciones:[
+          {artista:"Los Diablitos",titulo:"Los caminos de la vida",url:"https://youtu.be/I-cOD2x-qBs"},
+          {artista:"Carlos Vives",titulo:"La gota fría",url:"https://youtu.be/Nmb80HXWsFQ"},
+          {artista:"Diomedes Díaz & Poncho Zuleta",titulo:"Tú eres la reina",url:"https://youtu.be/Unk9Xan9yr0"}
+        ]
+      },
+      {
+        nombre:{es:"Cumbia",fr:"Cumbia"},
+        desc:{
+          es:"Es un género y baile tradicional de la región Caribe que surgió del mestizaje entre culturas indígenas, africanas y europeas. Utiliza principalmente tambores y elementos como la gaita o la caña de millo, con ritmos destinados al baile.",
+          fr:"C'est un genre et une danse traditionnels de la région caribéenne, nés du métissage entre cultures indigènes, africaines et européennes. Elle utilise principalement des tambours et des instruments comme la gaita ou la caña de millo, avec des rythmes faits pour danser."
+        },
+        canciones:[
+          {artista:"Totó la Momposina",titulo:"Yo me llamo cumbia",url:"https://youtu.be/_sOav6GrLr8"},
+          {artista:"José Barros",titulo:"La piragua",url:"https://youtu.be/9Hu-O56mWm8"}
+        ]
+      }
+    ]
+  },
+  {
+    nombre:{es:"Argentina",fr:"Argentine"}, sigla:"AR",
+    colores:["#74ACDF","#FFFFFF","#74ACDF"],
+    generos:[
+      {
+        nombre:{es:"Cumbia / Urbano argentino",fr:"Cumbia / Urbain argentin"},
+        desc:{
+          es:"Surgió a partir de la llegada y adaptación de la cumbia colombiana, incorporando elementos de la música tropical y posteriormente del rock, el rap y la música urbana. Existen diferentes estilos, como la cumbia villera, santafesina y romántica.",
+          fr:"Elle est née de l'arrivée et de l'adaptation de la cumbia colombienne, en intégrant des éléments de la musique tropicale, puis du rock, du rap et de la musique urbaine. Il en existe différents styles, comme la cumbia villera, santafesina et romántica."
+        },
+        canciones:[
+          {artista:"Ke Personajes ft. Onda Sabanera",titulo:"Pobre corazón",url:"https://youtu.be/Dcow-Jp3Ak4"}
+        ]
+      },
+      {
+        nombre:{es:"Cuarteto",fr:"Cuarteto"},
+        desc:{
+          es:"Es un género originario de Córdoba que nació a mediados del siglo XX a partir de la mezcla de ritmos europeos, especialmente la tarantela y el pasodoble, con música popular argentina. Se caracteriza por su ritmo marcado y rápido, pensado principalmente para bailar, y por el uso de piano, acordeón, bajo y percusión.",
+          fr:"C'est un genre originaire de Córdoba, né au milieu du XXe siècle du mélange de rythmes européens, en particulier la tarentelle et le paso doble, avec la musique populaire argentine. Il se caractérise par un rythme marqué et rapide, pensé avant tout pour danser, et par l'utilisation du piano, de l'accordéon, de la basse et des percussions."
+        },
+        canciones:[
+          {artista:"La Konga & Luck Ra",titulo:"Te mentiría",url:"https://youtu.be/lGRdhPlhbwc"}
+        ]
+      },
+      {
+        nombre:{es:"Rock nacional",fr:"Rock national"},
+        desc:{
+          es:"Se desarrolló desde finales de los años 60 a partir de la adaptación del rock anglosajón al contexto argentino. Se caracteriza por el uso del español, letras relacionadas con la realidad social y cultural del país y una gran variedad de estilos dentro del rock.",
+          fr:"Il s'est développé depuis la fin des années 60 à partir de l'adaptation du rock anglo-saxon au contexte argentin. Il se caractérise par l'usage de l'espagnol, des paroles liées à la réalité sociale et culturelle du pays et une grande variété de styles au sein du rock."
+        },
+        canciones:[
+          {artista:"Enanitos Verdes",titulo:"Lamento boliviano",url:"https://youtu.be/hReAuaAuJOE"},
+          {artista:"Soda Stereo",titulo:"De música ligera",url:"https://youtu.be/T_FkEw27XJ0"},
+          {artista:"Los Abuelos de la Nada",titulo:"Mil horas",url:"https://youtu.be/1To_Wz5RWi0"}
+        ]
+      },
+      {
+        nombre:{es:"Folklore argentino",fr:"Folklore argentin"},
+        desc:{
+          es:"Reúne diferentes músicas tradicionales de las regiones del país, con géneros como la zamba, chacarera, gato y chamamé. Combina raíces indígenas, españolas y criollas, y suele utilizar guitarras, bombos, violines y acordeones.",
+          fr:"Il réunit différentes musiques traditionnelles des régions du pays, avec des genres comme la zamba, la chacarera, le gato et le chamamé. Il combine des racines indigènes, espagnoles et créoles, et utilise souvent guitares, bombos, violons et accordéons."
+        },
+        canciones:[
+          {artista:"Mercedes Sosa",titulo:"Gracias a la vida",url:"https://youtu.be/cIrGQD84F1g"},
+          {artista:"Los Nocheros",titulo:"Entre la tierra y el cielo",url:"https://youtu.be/l5bbNRorinQ"},
+          {artista:"Los Chalchaleros",titulo:"Zamba de mi esperanza",url:"https://youtu.be/UmBUqwxUvWM"}
+        ]
+      }
+    ]
+  },
+  {
+    nombre:{es:"Uruguay",fr:"Uruguay"}, sigla:"UY",
+    colores:["#FFFFFF","#0038A8","#FFFFFF","#0038A8","#FCD116"],
+    generos:[
+      {
+        nombre:{es:"Cumbia / Plena uruguaya",fr:"Cumbia / Plena uruguayenne"},
+        desc:{
+          es:"La cumbia uruguaya surgió de la adaptación de la cumbia latinoamericana a la escena local, mientras que la plena incorporó influencias caribeñas y tropicales. Son géneros principalmente bailables, con percusión, teclados, bajo y voces melódicas.",
+          fr:"La cumbia uruguayenne est née de l'adaptation de la cumbia latino-américaine à la scène locale, tandis que la plena a intégré des influences caribéennes et tropicales. Ce sont des genres surtout dansants, avec percussions, claviers, basse et voix mélodiques."
+        },
+        canciones:[
+          {artista:"Valentino Merlo & The La Planta",titulo:"Hoy",url:"https://youtu.be/kSn9xf6mVWQ"},
+          {artista:"Matías Valdez",titulo:"No te da",url:"https://youtu.be/CAbEhecfEEg"}
+        ]
+      },
+      {
+        nombre:{es:"Rock uruguayo",fr:"Rock uruguayen"},
+        desc:{
+          es:"Se desarrolló tomando como base el rock británico y estadounidense, pero incorporando elementos de la música popular uruguaya y letras relacionadas con la sociedad y la vida cotidiana. Guitarras eléctricas, bajo y batería son fundamentales.",
+          fr:"Il s'est développé en prenant pour base le rock britannique et américain, tout en intégrant des éléments de la musique populaire uruguayenne et des paroles liées à la société et à la vie quotidienne. Guitares électriques, basse et batterie y sont essentielles."
+        },
+        canciones:[
+          {artista:"El Cuarteto de Nos",titulo:"Lo malo de ser bueno",url:"https://youtu.be/S_roMeig-YQ"},
+          {artista:"No Te Va Gustar",titulo:"A las nueve",url:"https://youtu.be/30oa0b2mdUo"},
+          {artista:"La Vela Puerca",titulo:"Zafar",url:"https://youtu.be/OtPz-UQVK-k"}
+        ]
+      },
+      {
+        nombre:{es:"Candombe",fr:"Candombe"},
+        desc:{
+          es:"Es una tradición musical afro-uruguaya originada en las comunidades de ascendencia africana de Montevideo. Su elemento central es el toque de tambores —chico, repique y piano— y está estrechamente relacionado con el baile y las llamadas de candombe.",
+          fr:"C'est une tradition musicale afro-uruguayenne née dans les communautés d'ascendance africaine de Montevideo. Son élément central est le jeu des tambours — chico, repique et piano — et elle est étroitement liée à la danse et aux « llamadas » de candombe."
+        },
+        canciones:[
+          {artista:"Rubén Rada",titulo:"Candombe para Gardel",url:"https://youtu.be/nqUqswcgknw"},
+          {artista:"Jaime Roos",titulo:"Brindis por Pierrot",url:"https://youtu.be/DAYfzCVQnPg"},
+          {artista:"Canario Luna",titulo:"Gloriosa celeste",url:"https://youtu.be/v8rG-cc03Gk"}
+        ]
+      }
+    ]
+  },
+  {
+    nombre:{es:"Chile",fr:"Chili"}, sigla:"CL",
+    colores:["#0039A6","#FFFFFF","#D52B1E"],
+    generos:[
+      {
+        nombre:{es:"Urbano chileno / Reguetón",fr:"Urbain chilien / Reggaeton"},
+        desc:{
+          es:"Se desarrolló principalmente a partir del reguetón, trap y hip-hop, incorporando influencias de la música urbana latinoamericana y electrónica. Se caracteriza por bases digitales, bajos marcados, melodías vocales y producción moderna.",
+          fr:"Il s'est développé principalement à partir du reggaeton, de la trap et du hip-hop, en intégrant des influences de la musique urbaine latino-américaine et de l'électronique. Il se caractérise par des rythmiques numériques, des basses marquées, des mélodies vocales et une production moderne."
+        },
+        canciones:[
+          {artista:"FloyyMenor & Cris MJ",titulo:"Gata Only",url:"https://youtu.be/-r687V8yqKY"}
+        ]
+      },
+      {
+        nombre:{es:"Rock / Pop chileno",fr:"Rock / Pop chilien"},
+        desc:{
+          es:"Comenzó influenciado por el rock estadounidense y británico, pero con el tiempo incorporó elementos propios de la música y cultura chilenas. Grupos como Los Jaivas mezclaron rock con instrumentos y ritmos tradicionales, mientras que otros desarrollaron un rock más ligado a la realidad social del país.",
+          fr:"Il a d'abord été influencé par le rock américain et britannique, mais il a peu à peu intégré des éléments propres à la musique et à la culture chiliennes. Des groupes comme Los Jaivas ont mêlé le rock à des instruments et des rythmes traditionnels, tandis que d'autres ont développé un rock plus lié à la réalité sociale du pays."
+        },
+        canciones:[
+          {artista:"Los Prisioneros",titulo:"Tren al sur",url:"https://youtu.be/eDipH-myZWE"},
+          {artista:"Los Tres",titulo:"Déjate caer",url:"https://youtu.be/j25Htq9yDn0"},
+          {artista:"La Ley",titulo:"Mentira",url:"https://youtu.be/d1dcXgGQT2M"}
+        ]
+      },
+      {
+        nombre:{es:"Cueca / Folklore chileno",fr:"Cueca / Folklore chilien"},
+        desc:{
+          es:"Es la principal danza tradicional chilena y fue declarada danza nacional en 1979. Está relacionada con la zamacueca y presenta diferentes variantes regionales; suele utilizar guitarra, acordeón, pandero y otros instrumentos según el estilo.",
+          fr:"C'est la principale danse traditionnelle chilienne, déclarée danse nationale en 1979. Elle est liée à la zamacueca et présente différentes variantes régionales ; elle utilise souvent la guitare, l'accordéon, le tambourin et d'autres instruments selon le style."
+        },
+        canciones:[
+          {artista:"Violeta Parra",titulo:"La jardinera",url:"https://youtu.be/9SKUGIRZ_Us"},
+          {artista:"Los Cuatro de Chile",titulo:"Chile lindo",url:"https://youtu.be/GRsi55teC2Y"},
+          {artista:"Los Perlas",titulo:"El guatón Loyola",url:"https://youtu.be/mLMkvEzlOWU"}
+        ]
+      }
+    ]
+  },
+  {
+    nombre:{es:"Perú",fr:"Pérou"}, sigla:"PE",
+    colores:["#D91023","#FFFFFF","#D91023"],
+    generos:[
+      {
+        nombre:{es:"Cumbia peruana contemporánea",fr:"Cumbia péruvienne contemporaine"},
+        desc:{
+          es:"La cumbia peruana tomó la cumbia colombiana y la transformó completamente al incorporar elementos de música andina, amazónica, rock y psicodelia. De ahí surgieron estilos como la cumbia chicha y la cumbia amazónica.",
+          fr:"La cumbia péruvienne a repris la cumbia colombienne et l'a complètement transformée en y intégrant des éléments de musique andine et amazonienne, de rock et de psychédélisme. De là sont nés des styles comme la cumbia chicha et la cumbia amazonienne."
+        },
+        canciones:[
+          {artista:"Grupo 5",titulo:"Amor de mis amores",url:"https://youtu.be/iAMNQ35pnrg"},
+          {artista:"Corazón Serrano",titulo:"Tu recuerdo",url:"https://youtu.be/zqIYShjvOUU"}
+        ]
+      },
+      {
+        nombre:{es:"Salsa peruana / Música criolla-popular",fr:"Salsa péruvienne / Musique créole populaire"},
+        desc:{
+          es:"Es una tradición musical principalmente costeña que mezcla influencias españolas, africanas e indígenas. Incluye géneros como el vals criollo, festejo, polka y marinera, y suele utilizar guitarras y percusión.",
+          fr:"C'est une tradition musicale principalement côtière qui mêle des influences espagnoles, africaines et indigènes. Elle comprend des genres comme la valse créole, le festejo, la polka et la marinera, et utilise souvent guitares et percussions."
+        },
+        canciones:[
+          {artista:"Daniela Darcourt",titulo:"Señor mentira",url:"https://youtu.be/6C4GHCDMAVM"},
+          {artista:"Josimar y su Yambú",titulo:"La protagonista",url:"https://youtu.be/1WTXIW5uXrE"},
+          {artista:"Chabuca Granda",titulo:"La flor de la canela",url:"https://youtu.be/YVtujmsQs3c"},
+          {artista:"Arturo “Zambo” Cavero & Óscar Avilés",titulo:"Contigo Perú",url:"https://youtu.be/7WfDklIkcqo"}
+        ]
+      },
+      {
+        nombre:{es:"Huayno / Música andina",fr:"Huayno / Musique andine"},
+        desc:{
+          es:"Es una música tradicional de los Andes, con raíces prehispánicas y posteriores influencias europeas. Suele utilizar instrumentos como quena, charango, arpa y violín, y sus letras hablan de amor, naturaleza y vida cotidiana.",
+          fr:"C'est une musique traditionnelle des Andes, aux racines préhispaniques et aux influences européennes plus tardives. Elle utilise souvent des instruments comme la quena, le charango, la harpe et le violon, et ses paroles parlent d'amour, de nature et de vie quotidienne."
+        },
+        canciones:[
+          {artista:"William Luna",titulo:"Niñachay",url:"https://youtu.be/87i4d58nS70"},
+          {artista:"Dina Páucar",titulo:"Qué lindos son tus ojos",url:"https://youtu.be/JAIGr-WSRlo"},
+          {artista:"Antología",titulo:"Aléjate",url:"https://youtu.be/Ly3J0-Ni5To"}
+        ]
+      },
+      {
+        nombre:{es:"Cumbia amazónica",fr:"Cumbia amazonienne"},
+        desc:{
+          es:"Es una variante nacida en la Amazonía peruana que mezcla cumbia con rock y psicodelia. Destacan las guitarras eléctricas, los efectos y los ritmos repetitivos, creando un sonido muy característico de la selva.",
+          fr:"C'est une variante née dans l'Amazonie péruvienne qui mêle la cumbia au rock et au psychédélisme. Les guitares électriques, les effets et les rythmes répétitifs y dominent, créant un son très caractéristique de la forêt amazonienne."
+        },
+        canciones:[
+          {artista:"Los Mirlos",titulo:"La danza del petrolero",url:"https://youtu.be/sezVHRZXUT8"}
+        ]
+      }
+    ]
+  }
+];
+
+/* Textos de la interfaz */
+const TEXTOS = {
+  es:{
+    titulo:"Playlist Latinoamericana",
+    subtitulo:"Un viaje por los ritmos de Latinoamérica. Toca un país para descubrir sus géneros y escuchar las canciones.",
+    generos:n => n===1 ? "1 género" : n+" géneros",
+    canciones:n => n===1 ? "1 canción" : n+" canciones",
+    escuchar:"Escuchar en YouTube",
+    pie:"♪ Toca cualquier canción para abrirla en YouTube ♪"
+  },
+  fr:{
+    titulo:"Playlist latino-américaine",
+    subtitulo:"Un voyage à travers les rythmes d'Amérique latine. Touchez un pays pour découvrir ses genres et écouter les chansons.",
+    generos:n => n===1 ? "1 genre" : n+" genres",
+    canciones:n => n===1 ? "1 chanson" : n+" chansons",
+    escuchar:"Écouter sur YouTube",
+    pie:"♪ Touchez une chanson pour l'ouvrir sur YouTube ♪"
+  }
+};
+
+const COLORES_GENERO = ["#e6197a","#ff7a00","#00a396","#7b2cbf","#1f6feb","#3a9a44"];
+const COLORES_ICONO  = ["#e6197a","#ff7a00","#00b3a6","#7b2cbf","#3bb54a","#1f6feb"];
+
+let idioma = "es";
+try { const g = localStorage.getItem("playlist-idioma"); if (g === "es" || g === "fr") idioma = g; } catch(e) {}
+const abiertos = new Set();
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function pintar(){
+  const t = TEXTOS[idioma];
+  document.documentElement.lang = idioma;
+  document.title = t.titulo;
+  document.getElementById("titulo").textContent = t.titulo;
+  document.getElementById("subtitulo").textContent = t.subtitulo;
+  document.getElementById("pie").textContent = t.pie;
+  document.querySelectorAll(".idioma button").forEach(b => b.classList.toggle("activo", b.dataset.lang === idioma));
+
+  const cont = document.getElementById("paises");
+  cont.innerHTML = PAISES.map((p, i) => {
+    const total = p.generos.reduce((a, g) => a + g.canciones.length, 0);
+    const abierto = abiertos.has(i);
+    const generos = p.generos.map((g, j) => `
+      <section class="genero" style="--c:${COLORES_GENERO[j % COLORES_GENERO.length]}">
+        <h3>${esc(g.nombre[idioma])}</h3>
+        ${g.desc ? `<p>${esc(g.desc[idioma])}</p>` : ""}
+        <ul class="canciones">
+          ${g.canciones.map(c => `
+            <li><a href="${esc(c.url)}" target="_blank" rel="noopener" title="${esc(t.escuchar)}">
+              <span class="play"><svg viewBox="0 0 10 12"><path d="M0 0L10 6L0 12Z"/></svg></span>
+              <span class="cancion-info">
+                <span class="cancion-titulo">${esc(c.titulo)}</span>
+                <span class="cancion-artista">${esc(c.artista)}</span>
+              </span>
+            </a></li>`).join("")}
+        </ul>
+      </section>`).join("");
+
+    return `
+      <article class="pais${abierto ? " abierto" : ""}" data-i="${i}">
+        <div class="franja">${p.colores.map(c => `<i style="background:${c}"></i>`).join("")}</div>
+        <button class="pais-cabecera" type="button" aria-expanded="${abierto}">
+          <span class="pais-icono" style="background:${COLORES_ICONO[i % COLORES_ICONO.length]}">${esc(p.sigla)}</span>
+          <span class="pais-textos">
+            <span class="pais-nombre">${esc(p.nombre[idioma])}</span>
+            <span class="pais-resumen"><span>🎶 ${t.generos(p.generos.length)}</span><span>▶ ${t.canciones(total)}</span></span>
+          </span>
+          <span class="flecha"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <div class="pais-contenido"><div><div class="generos">${generos}</div></div></div>
+      </article>`;
+  }).join("");
+}
+
+document.getElementById("paises").addEventListener("click", e => {
+  const btn = e.target.closest(".pais-cabecera");
+  if (!btn) return;
+  const card = btn.closest(".pais");
+  const i = +card.dataset.i;
+  const abrir = !card.classList.contains("abierto");
+  card.classList.toggle("abierto", abrir);
+  btn.setAttribute("aria-expanded", abrir);
+  abrir ? abiertos.add(i) : abiertos.delete(i);
+  if (abrir) setTimeout(() => card.scrollIntoView({behavior:"smooth", block:"start"}), 120);
+});
+
+document.querySelectorAll(".idioma button").forEach(b => b.addEventListener("click", () => {
+  idioma = b.dataset.lang;
+  try { localStorage.setItem("playlist-idioma", idioma); } catch(e) {}
+  pintar();
+}));
+
+/* Decoración: papel picado y notas musicales */
+(function(){
+  const pp = document.querySelector(".papel-picado");
+  const n = Math.ceil(window.innerWidth / 50) + 4;
+  pp.innerHTML = Array.from({length:n}, () => '<div class="banderin"></div>').join("");
+
+  const notas = document.querySelector(".notas");
+  const simbolos = ["♪","♫","♩","♬"];
+  for (let k = 0; k < 16; k++){
+    const s = document.createElement("span");
+    s.textContent = simbolos[k % simbolos.length];
+    s.style.left = (Math.random() * 100) + "%";
+    s.style.fontSize = (1.2 + Math.random() * 2) + "rem";
+    s.style.animationDuration = (12 + Math.random() * 14) + "s";
+    s.style.animationDelay = (-Math.random() * 25) + "s";
+    notas.appendChild(s);
+  }
+})();
+
+pintar();
+</script>
+</body>
+</html>
