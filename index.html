@@ -36,13 +36,11 @@
     overflow-x:hidden;
   }
 
-  /* Patrón de textil andino / grecas encima del fondo */
   body::before{
     content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.13;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23fff' stroke-width='3'%3E%3Cpath d='M0 40 L20 20 L40 40 L60 20 L80 40'/%3E%3Cpath d='M0 60 L20 80 L40 60 L60 80 L80 60'/%3E%3Crect x='34' y='4' width='12' height='12' transform='rotate(45 40 10)'/%3E%3C/g%3E%3C/svg%3E");
   }
 
-  /* Notas musicales flotando */
   .notas{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   .notas span{
     position:absolute;bottom:-60px;color:rgba(255,255,255,.35);
@@ -54,7 +52,6 @@
     100%{transform:translateY(-115vh) rotate(25deg);opacity:0}
   }
 
-  /* Papel picado */
   .papel-picado{
     position:relative;z-index:1;display:flex;justify-content:center;
     gap:6px;padding-top:14px;overflow:hidden;
@@ -81,7 +78,6 @@
   .banderin:nth-child(6n+6){background:var(--naranja);animation-delay:-2.5s}
   @keyframes mecer{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 
-  /* Selector de idioma */
   .idioma{
     position:fixed;top:16px;right:16px;z-index:10;
     display:flex;background:rgba(255,250,241,.95);border-radius:999px;padding:4px;
@@ -112,7 +108,6 @@
     display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;align-items:start;
   }
 
-  /* Cajita de país */
   .pais{
     background:var(--papel);border-radius:20px;overflow:hidden;
     box-shadow:0 10px 0 rgba(42,18,51,.25),0 14px 30px rgba(0,0,0,.25);
@@ -218,11 +213,6 @@
 <script>
 /* =====================================================================
    DATOS DE LA PLAYLIST
-   Para añadir un país nuevo, copia uno de los bloques { ... } y cambia:
-   - nombre: { es, fr }
-   - sigla: 2 letras que salen en el círculo
-   - colores: colores de la bandera (para la franja de arriba)
-   - generos: lista de géneros, cada uno con nombre, descripción y canciones
    ===================================================================== */
 const PAISES = [
   {
@@ -446,7 +436,7 @@ const PAISES = [
         ]
       }
     ]
-  }
+  },
   {
     nombre:{es:"Paraguay",fr:"Paraguay"}, sigla:"PY",
     colores:["#D52B1E","#FFFFFF","#0038A8"],
@@ -697,7 +687,6 @@ document.querySelectorAll(".idioma button").forEach(b => b.addEventListener("cli
   pintar();
 }));
 
-/* Decoración: papel picado y notas musicales */
 (function(){
   const pp = document.querySelector(".papel-picado");
   const n = Math.ceil(window.innerWidth / 50) + 4;
